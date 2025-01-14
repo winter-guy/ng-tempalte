@@ -1,0 +1,11 @@
+{
+  "domain": "",
+  "clientId": "",
+  "authorizationParams": {
+    "audience": ""
+  },
+  "apiUri": "http://localhost:3000",
+  "proxy": "/prxy",
+  "appUri": "http://localhost:3000",
+  "errorPath": "/error"
+}

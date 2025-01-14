@@ -1,0 +1,18 @@
+
+
+  <form [formGroup]="filterOptionsFg">
+      <hlm-select scrollable="true" [multiple]="true" formControlName="select" placeholder="Select an option" class="m-0" (openedChange)="emitControlWoValues($event)">
+        <hlm-select-trigger class="max-w-full">
+            <hlm-select-value />
+        </hlm-select-trigger>
+        <hlm-select-content class="max-h-96 min-w-[325px]">
+            <hlm-select-scroll-up/>
+                <hlm-select-group>(
+                    @for (item of _oil_companies(); track $index) {
+                        <hlm-option [value]="item.value">{{ item.label }}</hlm-option>
+                    }
+                </hlm-select-group>
+            <hlm-select-scroll-down/>
+        </hlm-select-content>
+    </hlm-select>
+  </form>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SelectPreviewComponent } from "./components/select.component";
+import { SelectPreviewComponent } from "./components/select/select.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 
 @Component({
