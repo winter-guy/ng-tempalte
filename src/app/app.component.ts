@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SelectPreviewComponent } from "./components/select.component";
+import { DashboardComponent } from "./components/dashboard/dashboard.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, SelectPreviewComponent],
+  imports: [RouterOutlet, DashboardComponent],
   template: `
-    <h1>Welcome to {{title}}!</h1>
-      <spartan-select-preview></spartan-select-preview>
+    <app-dashboard />
     <router-outlet />
   `,
   styles: [],
