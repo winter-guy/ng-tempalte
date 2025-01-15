@@ -36,7 +36,7 @@ type SelectTriggerVariants = VariantProps<typeof selectTriggerVariants>;
 	providers: [provideIcons({ lucideChevronDown })],
 
 	template: `
-		<button [class]="_computedClass()" #button hlmInput brnSelectTrigger type="button">
+		<button [class]="_computedClass()" class="w-full" #button hlmInput brnSelectTrigger type="button">
 			<ng-content />
 			@if (icon()) {
 				<ng-content select="hlm-icon" />
