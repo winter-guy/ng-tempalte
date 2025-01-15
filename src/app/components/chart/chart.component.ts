@@ -44,15 +44,39 @@ export class LightweightChartComponent implements OnInit, AfterViewInit, OnChang
     });
 
     this.chart.applyOptions({
-      grid: {
-        vertLines: {
-          visible: false,
-        },
-        horzLines: {
-          visible: false,
-        },
+      leftPriceScale: {
+          visible: true,
+          borderVisible: false,
       },
-    });
+      rightPriceScale: {
+          visible: false,
+      },
+      timeScale: {
+          borderVisible: false,
+      },
+      crosshair: {
+          horzLine: {
+              visible: false,
+              labelVisible: false,
+          },
+          vertLine: {
+              visible: true,
+              style: 0,
+              width: 2,
+              color: 'rgba(32, 38, 46, 0.1)',
+              labelVisible: false,
+          },
+      },
+      // hide the grid lines
+      grid: {
+          vertLines: {
+              visible: false,
+          },
+          horzLines: {
+              visible: false,
+          },
+      },
+  });
 
     this.chart.timeScale().fitContent();
     this.chart.subscribeCrosshairMove(this.updateToolTip.bind(this));
@@ -116,9 +140,9 @@ export class LightweightChartComponent implements OnInit, AfterViewInit, OnChang
     this.toolTip.style.pointerEvents = 'none';
     this.toolTip.style.border = '1px solid';
     this.toolTip.style.borderRadius = '4px';
-    this.toolTip.style.background = '#e5e7eb';
+    this.toolTip.style.background = '#fff';
     this.toolTip.style.color = 'black';
-    this.toolTip.style.borderColor = '#FFF';
+    this.toolTip.style.borderColor = '#5F9EA0';
     container.appendChild(this.toolTip);
   }
 
