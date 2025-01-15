@@ -1,37 +1,19 @@
 <mat-drawer-container class="h-screen !bg-white" autosize>
     <mat-drawer #drawer class="border-r !w-60 p-2 !bg-white" mode="side" opened>
-      <select-multi [_oil_companies]="oilCompanies" (changeEvent)="selectedCompanies($event)"></select-multi>
+        <select-multi [_oil_companies]="oilCompanies" (changeEvent)="selectedCompanies($event)"></select-multi>
 
-      <div class="mt-8">
-        @for (item of _selectedCompanies; track $index) {
-            <badge-preview [name]="item"  />
-        }
-      </div>
+        <div class="mt-8">
+            @for (item of _selectedCompanies; track $index) {
+            <badge-preview [name]="item" />
+            }
+        </div>
     </mat-drawer>
-  
-    <div class="border-l h-full">
-      
-      <chart [inputData]="{
-        'IOCL-BARAUNI,BIHAR': [
-          { time: 1514808000, value: 200 },
-          { time: 1514894400, value: 200.568 },
-          { time: 1514980800, value: 201.274 },
-          { time: 1515067200, value: 202.114 },
-          { time: 1515153600, value: 203.086 }
-        ],
-        'IOCL-BARAUNI,BIHARx': [
-          { time: 1514808000, value: 200 },
-          { time: 1514894400, value: 200.568 },
-          { time: 1514980800, value: 201.274 },
-          { time: 1515067200, value: 202.114 },
-          { time: 1515153610, value: 203.086 }
-        ]
-      }"></chart>
-      <button type="button" mat-button (click)="drawer.toggle()">
-        Toggle sidenav
-      </button>
 
+    <div class="border-l h-full">
+
+        @if (oilCompaniesWithData) {
+        <chart [inputData]="oilCompaniesWithData"></chart>
+        }
     </div>
-  
-  </mat-drawer-container>
-  
+
+</mat-drawer-container>

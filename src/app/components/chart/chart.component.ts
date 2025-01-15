@@ -4,16 +4,18 @@ import {
   OnInit,
   AfterViewInit,
   HostListener,
-  Input
+  Input,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import { createChart, IChartApi, ISeriesApi, LineData, Time, WhitespaceData } from 'lightweight-charts';
 
 @Component({
   selector: 'chart',
-  template: `<div id="chart-container" class="md:w-[calc(100vw-192px)] w-screen h-[calc(100vh/2)]"></div>`,
+  template: `<div id="chart-container" class="md:w-[calc(100vw-252px)] h-screen"></div>`,
   styles: []
 })
-export class LightweightChartComponent implements OnInit, AfterViewInit {
+export class LightweightChartComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() inputData: Record<string, { time: number; value: number }[]> = {};
 
   private chart!: IChartApi;
@@ -27,6 +29,10 @@ export class LightweightChartComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.initializeChart();
     this.createToolTip();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+   
     this.addSeriesData();
   }
 
@@ -103,7 +109,7 @@ export class LightweightChartComponent implements OnInit, AfterViewInit {
       // return;
     }
 
-    const dateStr = new Date(param.time * 1000).toISOString().split('T')[0];
+    const dateStr = new Date(param?.time * 1000)?.toISOString()?.split('T')[0];
 
     const seriesData = Array.from(this.seriesMap.entries())
       .map(([label, series]) => {

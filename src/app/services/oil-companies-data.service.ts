@@ -7,7 +7,7 @@ import { OilData, OilDataRecord } from '../types/records.type';
 export class OilCompaniesDataService {
   _hs = inject(HttpService);
 
-  private _oilRecords = new BehaviorSubject<OilDataRecord[]>({} as OilDataRecord[]);
+  private _oilRecords = new BehaviorSubject<OilDataRecord[]>([]);
   public readonly _oil_records$: Observable<OilDataRecord[]> = this._oilRecords.asObservable();
 
   private _grcs = new BehaviorSubject<OilDataRecord[]>([]);
