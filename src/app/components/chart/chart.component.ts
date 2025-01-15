@@ -60,12 +60,38 @@ export class LightweightChartComponent implements OnInit, AfterViewInit, OnChang
 
   private addSeriesData(): void {
     Object.keys(this.inputData).forEach((key) => {
-      const series = this.chart.addLineSeries();
-      const refer_series = this.inputData[key] as (LineData<Time> | WhitespaceData<Time>)[]
+      // Generate a random color from the predefined shades (blue, orange, red)
+      const randomColor = this.getRandomColorFromPalette();
+  
+      // Add a line series with the random color
+      const series = this.chart.addLineSeries({ color: randomColor });
+  
+      // Set data for the series
+      const refer_series = this.inputData[key] as (LineData<Time> | WhitespaceData<Time>)[];
       series.setData(refer_series);
+  
+      // Store the series in the map
       this.seriesMap.set(key, series);
     });
   }
+  
+  private getRandomColorFromPalette(): string {
+    const blueShades = [
+      '#0000FF', '#1E90FF', '#4682B4', '#5F9EA0', '#ADD8E6', '#87CEFA'
+    ];
+    const orangeShades = [
+      '#FFA500', '#FF8C00', '#FF7F50', '#FF6347', '#FF4500', '#FFD700'
+    ];
+    const redShades = [
+      '#FF0000', '#DC143C', '#B22222', '#FF6347', '#8B0000', '#CD5C5C'
+    ];
+
+    const allShades = [...blueShades, ...orangeShades, ...redShades];
+  
+    return allShades[Math.floor(Math.random() * allShades.length)];
+  }
+  
+  
 
   @HostListener('window:resize')
   onResize(): void {
