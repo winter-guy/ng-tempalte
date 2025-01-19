@@ -1,17 +1,21 @@
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
-import { ChangeDetectorRef, Component, inject, OnInit, OutputEmitterRef } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { LightweightChartComponent } from "../chart/chart.component";
 import { SelectPreviewComponent } from "../select/select.component";
 import { OilCompaniesDataService } from '../../services/oil-companies-data.service';
 
 import { BadgePreviewComponent } from "../badges/badge.component";
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { OilDataRecord } from '../../types/records.type';
+import { Match, OilDataRecord } from '../../types/records.type';
+import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
+
+import { GridComponent } from "../grid/grid.component";
 
 @Component({
   selector: 'app-dashboard',
-  imports: [MatSidenavModule, MatButtonModule, LightweightChartComponent, SelectPreviewComponent, BadgePreviewComponent],
+  imports: [MatSidenavModule, MatButtonModule, LightweightChartComponent, SelectPreviewComponent, BadgePreviewComponent,
+    HlmButtonDirective, GridComponent],
   providers: [OilCompaniesDataService],
   templateUrl: './dashboard.component.html',
   styles: ``
@@ -34,7 +38,10 @@ export class DashboardComponent implements OnInit {
       this._oilDataRecords = res;
 
       if(res.length > 0)
-      this.oilCompanies = [...new Set(res.map((x) => { return { label: x.oil_companies_, value: x.oil_companies_ } }))];
+      this.oilCompanies = [...new Set(res.map((x) => x.oil_companies_ ))]?.map((searchStr) => {
+        return { value: searchStr, label: searchStr}
+        
+      });
     })
 
     this.filterOptionsFg = this.fb.group({
@@ -52,7 +59,7 @@ export class DashboardComponent implements OnInit {
     console.log(this.oilCompaniesWithData)
   }
     
-  extractMatches(x: string[], data: DataItem[]): Record<string, Match[]> {
+  extractMatches(x: string[], data: OilDataRecord[]): Record<string, Match[]> {
     const result: Record<string, Match[]> = {}; // Explicit type for the result
   
     x?.forEach((searchStr) => {
@@ -72,18 +79,5 @@ export class DashboardComponent implements OnInit {
   
     return result;
   }
-  
-
 }
 
-interface DataItem {
-  _month_: string;
-  year: string;
-  oil_companies_: string;
-  quantity_000_metric_tonnes_: string;
-}
-
-interface Match {
-  time: number;
-  value: number;
-}

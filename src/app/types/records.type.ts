@@ -39,3 +39,8 @@ export type OilData = {
     offset: string;
     records: OilDataRecord[];
 };
+  
+  export interface Match {
+    time: number;
+    value: number;
+  }
