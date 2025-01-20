@@ -1,25 +1,27 @@
 <mat-drawer-container class="h-screen !bg-white" autosize>
-    <mat-drawer #drawer class="border-r p-2 !w-[calc(100%/1.5)] !rounded-none !bg-white" mode="over" position="end">
+    <mat-drawer #drawer class="border-r p-2 !w-[calc(100%/1.5)] !rounded-none !bg-white" mode="push" position="start">
         <grid class="w-full"></grid>
     </mat-drawer>
 
     <div class="border-l h-full flex gap-2">
-        <div class="w-56 border-r px-2">
-            <button hlmBtn size="icon" size="sm" class="mt-2" (click)="drawer.toggle()">
+        <div class="w-56 border-r px-2 flex flex-col justify-between">
+            <div>
+                <select-multi [_oil_companies]="oilCompanies" (changeEvent)="selectedCompanies($event)"></select-multi>
+
+                <div class="mt-8">
+                    @for (item of _selectedCompanies; track $index) {
+                    <badge-preview [name]="item" />
+                    }
+                </div>
+            </div>
+            <button hlmBtn size="icon" size="sm" class="mb-2 gap-2 w-full" (click)="drawer.toggle()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-4">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
                 </svg>
-
+                Table
             </button>
-            <select-multi [_oil_companies]="oilCompanies" (changeEvent)="selectedCompanies($event)"></select-multi>
-
-            <div class="mt-8">
-                @for (item of _selectedCompanies; track $index) {
-                <badge-preview [name]="item" />
-                }
-            </div>
         </div>
         @if (oilCompaniesWithData) {
         <chart [inputData]="oilCompaniesWithData"></chart>

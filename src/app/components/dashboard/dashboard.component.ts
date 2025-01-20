@@ -21,8 +21,21 @@ import { GridComponent } from "../grid/grid.component";
   styles: ``
 })
 export class DashboardComponent implements OnInit {
-  oilCompanies!: { label: string; value: string }[];
-  
+  oilCompanies: { label: string; value: string }[] = [
+    {
+      label: 'IOCL-BARAUNI,BIHAR',
+      value: 'IOCL-BARAUNI,BIHAR'
+    },
+    {
+      label: 'IOCL-BONGAIGAON,ASSAM',
+      value: 'IOCL-BONGAIGAON,ASSAM'
+    },
+    {
+      label: 'ONGC TOTAL',
+      value: 'ONGC TOTAL'
+    }
+  ];
+
   _selectedCompanies: string[] = [];
   _oilDataRecords!: OilDataRecord[];
 
@@ -37,10 +50,10 @@ export class DashboardComponent implements OnInit {
     this._oilData._oil_records$.subscribe((res) => {
       this._oilDataRecords = res;
 
-      if(res.length > 0)
-      this.oilCompanies = [...new Set(res.map((x) => x.oil_companies_ ))]?.map((searchStr) => {
-        return { value: searchStr, label: searchStr}
-      });
+      if (res.length > 0)
+        this.oilCompanies = [...new Set(res.map((x) => x.oil_companies_))]?.map((searchStr) => {
+          return { value: searchStr, label: searchStr }
+        });
     })
 
 
@@ -55,13 +68,11 @@ export class DashboardComponent implements OnInit {
     this._selectedCompanies = event;
 
     this.oilCompaniesWithData = (this.extractMatches(event, this._oilDataRecords));
-    // this.cdr.detectChanges();
-    console.log(this.oilCompaniesWithData)
   }
-    
+
   extractMatches(x: string[], data: OilDataRecord[]): Record<string, Match[]> {
     const result: Record<string, Match[]> = {}; // Explicit type for the result
-  
+
     x?.forEach((searchStr) => {
       const matches = data
         .filter((item) => item.oil_companies_.includes(searchStr))
@@ -71,12 +82,12 @@ export class DashboardComponent implements OnInit {
           return { time, value };
         })
         .sort((a, b) => a.time - b.time);
-  
+
       if (matches.length > 0) {
         result[searchStr] = matches; // No error because of explicit typing
       }
     });
-  
+
     return result;
   }
 }
