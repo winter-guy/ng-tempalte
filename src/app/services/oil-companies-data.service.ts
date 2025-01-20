@@ -24,7 +24,9 @@ export class OilCompaniesDataService {
 
   getRecords() {
     this._hs.get<OilData>('/api/data').subscribe((_od) => {
-      this.setOilRecords(_od.records)
+      this.setOilRecords(_od.records.map(x => {
+        return {...x, time: (Math.floor(new Date(`${x._month_}, ${x.year}`).getTime() / 1000))}
+      }))
     })
   }
 

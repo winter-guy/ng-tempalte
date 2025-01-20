@@ -27,7 +27,6 @@ export class SelectPreviewComponent implements OnInit {
 
   emitControlWoValues(event: boolean) {
     event;
-    console.log(event)
 
     let selected = (this.filterOptionsFg.get('select')?.value);
     this.changeEvent.emit(selected);

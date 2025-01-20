@@ -3,6 +3,7 @@ export type OilDataRecord = {
     year: string;
     oil_companies_: string;
     quantity_000_metric_tonnes_: number;
+    time: number;
 };
 
 export type OilData = {
@@ -43,4 +44,12 @@ export type OilData = {
   export interface Match {
     time: number;
     value: number;
+  }
+
+  export interface SeriesSet {
+    type: "line",
+    xKey: "time",
+    yKey: string,
+    yName: string,
+    interpolation: { type: "smooth" },
   }

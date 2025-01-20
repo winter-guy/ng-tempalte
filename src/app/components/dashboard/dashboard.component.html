@@ -3,7 +3,7 @@
         <grid class="w-full"></grid>
     </mat-drawer>
 
-    <div class="border-l h-full flex gap-2">
+    <div class="border-l h-screen flex">
         <div class="w-56 border-r px-2 flex flex-col justify-between">
             <div>
                 <select-multi [_oil_companies]="oilCompanies" (changeEvent)="selectedCompanies($event)"></select-multi>
@@ -23,9 +23,7 @@
                 Table
             </button>
         </div>
-        @if (oilCompaniesWithData) {
-        <chart [inputData]="oilCompaniesWithData"></chart>
-        }
+        <lc-ag class="h-full w-full relative" [seiesSet]="_series" [seriesData]="_seried_data" />
     </div>
 
 </mat-drawer-container>
