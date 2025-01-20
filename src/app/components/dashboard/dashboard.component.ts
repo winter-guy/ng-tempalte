@@ -40,9 +40,9 @@ export class DashboardComponent implements OnInit {
       if(res.length > 0)
       this.oilCompanies = [...new Set(res.map((x) => x.oil_companies_ ))]?.map((searchStr) => {
         return { value: searchStr, label: searchStr}
-        
       });
     })
+
 
     this.filterOptionsFg = this.fb.group({
       select: [],
@@ -67,7 +67,7 @@ export class DashboardComponent implements OnInit {
         .filter((item) => item.oil_companies_.includes(searchStr))
         .map((item) => {
           const time = (Math.floor(new Date(`${item._month_}, ${item.year}`).getTime() / 1000));
-          const value = parseFloat(item.quantity_000_metric_tonnes_) || 0;
+          const value = Number(item.quantity_000_metric_tonnes_) || 0;
           return { time, value };
         })
         .sort((a, b) => a.time - b.time);

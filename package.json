@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "concurrently \"ng serve\" \"node mock/server.js\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development"
   },
@@ -42,6 +42,7 @@
     "@angular/compiler-cli": "^19.0.0",
     "@spartan-ng/cli": "^0.0.1-alpha.388",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.2",
     "postcss": "^8.5.1",
     "tailwind-merge": "^2.2.0",
     "tailwindcss": "^3.4.17",

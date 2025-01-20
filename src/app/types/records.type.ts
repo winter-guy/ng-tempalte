@@ -2,7 +2,7 @@ export type OilDataRecord = {
     _month_: string;
     year: string;
     oil_companies_: string;
-    quantity_000_metric_tonnes_: string;
+    quantity_000_metric_tonnes_: number;
 };
 
 export type OilData = {

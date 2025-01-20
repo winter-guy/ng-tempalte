@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { AllCommunityModule, ColDef, ModuleRegistry } from 'ag-grid-community';
+import { AllCommunityModule, CellSelectionOptions, CheckboxEditorModule, ColDef, DataTypeDefinition, IAggFunc, ModuleRegistry, RowSelectionOptions } from 'ag-grid-community';
 
-import { RowGroupingModule } from 'ag-grid-enterprise';
+import { CellSelectionModule, RowGroupingModule, RowGroupingPanelModule } from 'ag-grid-enterprise';
 
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { OilCompaniesDataService } from '../../services/oil-companies-data.service';
@@ -9,7 +9,14 @@ import { OilCompaniesDataService } from '../../services/oil-companies-data.servi
 import { Match, OilDataRecord } from '../../types/records.type';
 // import type { ColDef } from 'ag-grid-community'; 
 
-ModuleRegistry.registerModules([AllCommunityModule, RowGroupingModule]);
+ModuleRegistry.registerModules([
+  AllCommunityModule, 
+  RowGroupingModule,
+  RowGroupingPanelModule, 
+  CheckboxEditorModule, 
+  CellSelectionModule
+]);
+
 @Component({
   selector: 'grid',
   imports: [AgGridAngular],
@@ -23,29 +30,37 @@ export class GridComponent implements OnInit {
 
   // Column Definitions: Defines the columns to be displayed.
   colDefs: ColDef[] = [
-    { field: "oil_companies_", rowGroup: true, hide: true },
-    { field: "_month_" },
-    { field: "year", rowGroup: true, hide: true },
-    { field: "quantity_000_metric_tonnes_" }
+    { 
+      field: "oil_companies_", 
+      headerName: 'Oil Companies',
+      rowGroup: true, 
+      hide: true 
+    },
+    { 
+      field: "_month_", 
+      headerName: 'Month'
+    },
+    { 
+      field: "year",
+      headerName: 'Year',
+      rowGroup: true, 
+      hide: true 
+    },
+    { 
+      field: "quantity_000_metric_tonnes_", 
+      headerName: 'Quantity (Metric Tonnes)',
+      aggFunc: "sum"
+    }
   ];
 
   ngOnInit(): void {
     this.ocd._oil_records$.subscribe((_ords) => {
 
-      let value = this.extractMatches(_ords);
-      this.rowData = [...new Set(_ords.map((x) => x))];
+      this.extractMatches(_ords);
+      this.rowData = [...new Set(_ords.map((x) => { return { ...x, quantity_000_metric_tonnes_: Number(x.quantity_000_metric_tonnes_),  hasSelected: true } }))];
 
-      let ac = [...new Set(_ords.map((x) => { 
-        return { 
-          state: x.oil_companies_.split(',')[1],
-          oil_companies_: x.oil_companies_, 
-          _month_: x._month_, 
-          quantity_000_metric_tonnes_: x.quantity_000_metric_tonnes_,
-          year: x.year 
-        } 
-      }))];
+      console.log(this.rowData)
 
-      console.log(ac)
     })
   }
 
@@ -57,7 +72,7 @@ export class GridComponent implements OnInit {
         .filter((item) => item.oil_companies_.includes(searchStr))
         .map((item) => {
           const time = (Math.floor(new Date(`${item._month_}, ${item.year}`).getTime() / 1000));
-          const value = parseFloat(item.quantity_000_metric_tonnes_) || 0;
+          const value = (item.quantity_000_metric_tonnes_)
           const qmt = item.quantity_000_metric_tonnes_;
           const oc = item.oil_companies_;
           const month = item._month_;
@@ -74,4 +89,42 @@ export class GridComponent implements OnInit {
 
     return result;
   }
+
+  public defaultColDef: ColDef = {
+    flex: 1,
+    minWidth: 180,
+    filter: true,
+    floatingFilter: false,
+  };
+
+  public dataTypeDefinitions: {
+    [cellDataType: string]: DataTypeDefinition;
+  } = {
+      object: {
+        baseDataType: "object",
+        extendsDataType: "object",
+        valueParser: (params) => ({ name: params.newValue }),
+        valueFormatter: (params) =>
+          params.value == null ? "" : params.value.name,
+      },
+    };
+
+  public rowGroupPanelShow: "always" | "onlyWhenGrouping" | "never" = "always";
+  public cellSelection: boolean | CellSelectionOptions = {
+    handle: { mode: "fill" },
+  };
+
+  public rowSelection: RowSelectionOptions | "single" | "multiple" = {
+    mode: "multiRow",
+    groupSelects: 'descendants',
+  };
+
+  public aggFuncs: {
+    [key: string]: IAggFunc;
+  } = {
+    "2x+1": (params) => {
+      const value = params.values[0];
+      return 2 * value + 1;
+    },
+  };
 }

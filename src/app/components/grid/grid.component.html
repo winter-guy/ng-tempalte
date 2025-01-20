@@ -1,4 +1,10 @@
 <ag-grid-angular 
-class="h-full block rounded-none" 
+class="h-full w-full block rounded-none !text-xs" 
 [rowData]="rowData" 
-[columnDefs]="colDefs" />
+[columnDefs]="colDefs"
+[defaultColDef]="defaultColDef"
+[cellSelection]="cellSelection"
+[rowGroupPanelShow]="rowGroupPanelShow"
+[rowSelection]="rowSelection"
+[aggFuncs]="aggFuncs"
+[dataTypeDefinitions]="dataTypeDefinitions" />
