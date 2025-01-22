@@ -12,6 +12,8 @@ import { HlmButtonDirective } from '@spartan-ng/ui-button-helm';
 
 import { GridComponent } from "../grid/grid.component";
 import { MultiLineChartComponent } from "../chart/linechart.component";
+import { Store } from '@ngrx/store';
+import { loadItems } from '../../state/app.actions';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,10 +49,13 @@ export class DashboardComponent implements OnInit {
   _selectedCompanies: string[] = [];
   _oilDataRecords!: OilDataRecord[];
 
-  _oilData = inject(OilCompaniesDataService);
+  readonly fb = inject(FormBuilder);
+  readonly _oilData = inject(OilCompaniesDataService);
+  readonly store = inject(Store<{ items: OilDataRecord[] }>);
+
+  app$ = this.store.select('app');
   filterOptionsFg!: FormGroup;
 
-  readonly fb = inject(FormBuilder);
 
   ngOnInit(): void {
     this._oilData.getRecords();
@@ -68,6 +73,11 @@ export class DashboardComponent implements OnInit {
     this.filterOptionsFg = this.fb.group({
       select: [],
     });
+
+
+    // ngrx
+    this.store.dispatch(loadItems());
+    this.app$.subscribe((x) => console.log('Items:', x.items));
   }
 
   cdr = inject(ChangeDetectorRef);

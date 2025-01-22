@@ -3,7 +3,9 @@ import { HttpService } from './http/http-client-wrapper.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { OilData, OilDataRecord } from '../types/records.type';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class OilCompaniesDataService {
   _hs = inject(HttpService);
 
@@ -30,10 +32,8 @@ export class OilCompaniesDataService {
     })
   }
 
-  getRecordsWithConsumptions() {
-    this._hs.get<OilData>('/api/data').subscribe((_od) => {
-      
-    })
+  _getRecords() {
+    return this._hs.get<OilData>('/api/data')
   }
 }
 
