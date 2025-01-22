@@ -1,3 +1,4 @@
+import { CellRendererDialog } from './../expand-view/expand-view.component';
 import { Component, inject, OnInit } from '@angular/core';
 import {
   AllCommunityModule,
@@ -7,6 +8,7 @@ import {
   ColDef,
   DataTypeDefinition,
   IAggFunc,
+  ICellRendererParams,
   ModuleRegistry,
   RowSelectionOptions,
   SideBarDef
@@ -49,7 +51,7 @@ ModuleRegistry.registerModules([
   templateUrl: './grid.component.html'
 })
 export class GridComponent implements OnInit {
-  ocd = inject(OilCompaniesDataService);
+  readonly _ocd = inject(OilCompaniesDataService);
 
   // Row Data: The data to be displayed.
   rowData!: OilDataRecord[];
@@ -60,7 +62,11 @@ export class GridComponent implements OnInit {
       field: "oil_companies_",
       headerName: 'Oil Companies',
       rowGroup: true,
-      hide: true
+      hide: true,
+      cellRenderer: CellRendererDialog,
+      cellRendererParams: {
+        text: 'random text',
+      }
     },
     {
       field: "_month_",
@@ -77,7 +83,16 @@ export class GridComponent implements OnInit {
     {
       field: "quantity_000_metric_tonnes_",
       headerName: 'Quantity (Metric Tonnes)',
-      aggFunc: "sum"
+      aggFunc: "sum",
+      cellRenderer: (params: ICellRendererParams) => {
+        params.value = params.value?.toFixed(2);
+
+        if(params.value < 10000) {
+          return `<span class=" text-indigo-500">${params.value} </span>`;
+        }
+
+       return params.value;
+      }
     }
   ];
 
@@ -120,7 +135,7 @@ export class GridComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.ocd._oil_records$.subscribe((_ords) => {
+    this._ocd._oil_records$.subscribe((_ords) => {
 
       this.extractMatches(_ords);
       this.rowData = [...new Set(_ords.map((x) => { return { ...x, quantity_000_metric_tonnes_: Number(x.quantity_000_metric_tonnes_), hasSelected: true } }))];

@@ -113,7 +113,6 @@ export class DashboardComponent implements OnInit {
   
 
   extractMatches(x: string[], data: OilDataRecord[]): Record<string, Match[]> {
-    // Explicit type for the result
     const result: Record<string, Match[]> = {}; 
 
     x?.forEach((searchStr) => {
