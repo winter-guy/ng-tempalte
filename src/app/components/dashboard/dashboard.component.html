@@ -1,10 +1,9 @@
 <mat-drawer-container class="h-screen !bg-white" autosize>
     <mat-drawer #drawer class="border-r p-2 !w-[calc(100%/1.5)] !rounded-none !bg-white" mode="push" position="start">
-        <grid class="w-full"></grid>
+        <grid class="w-full" [drawerRef]="drawer"></grid>
     </mat-drawer>
-
-    <div class="border-l h-screen flex">
-        <div class="w-56 border-r px-2 flex flex-col justify-between">
+    <div class="flex h-screen border-l">
+        <div class="flex flex-col justify-between w-56 px-2 border-r">
             <div>
                 <select-multi [_oil_companies]="oilCompanies" (changeEvent)="selectedCompanies($event)"></select-multi>
 
@@ -14,7 +13,7 @@
                     }
                 </div>
             </div>
-            <button hlmBtn size="icon" size="sm" class="mb-2 gap-2 w-full" (click)="drawer.toggle()">
+            <button hlmBtn size="icon" size="sm" class="w-full gap-2 mb-2" (click)="drawer.toggle()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-4">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -23,7 +22,7 @@
                 Table
             </button>
         </div>
-        <lc-ag class="h-full w-full relative" [seiesSet]="_series" [seriesData]="_seried_data" />
+        <lc-ag class="relative w-full h-full" [seiesSet]="_series" [seriesData]="_seried_data" />
     </div>
 
 </mat-drawer-container>

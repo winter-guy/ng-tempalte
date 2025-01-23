@@ -12,10 +12,12 @@ import { ICellRendererParams } from 'ag-grid-enterprise';
 import { AgChartOptions } from "ag-charts-enterprise";
 import { Dialog, DIALOG_DATA, DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { OilCompaniesDataService } from '../../services/oil-companies-data.service';
-import { OilDataRecord } from '../../types/records.type';
+
 import { Observable } from 'rxjs';
 import { AppState } from '../../state/app.reducer';
 import { Store } from '@ngrx/store';
+import { MatDrawer } from '@angular/material/sidenav';
+import { ICrdType } from '../grid/grid.component';
 
 export interface DialogData {
   name: string;
@@ -33,11 +35,13 @@ export class CellRendererDialog implements ICellRendererAngularComp {
   readonly animal = signal('');
   readonly name = model('');
   readonly dialog = inject(Dialog);
+  drawerRef!: MatDrawer;
 
   value: any;
 
-  agInit(params: ICellRendererParams<any, any, any>): void {
+  agInit(params: ICellRendererParams & ICrdType): void {
     this.value = params.value;
+    this.drawerRef = params.drawerRef;
   }
 
   refresh(params: ICellRendererParams<any, any, any>): boolean {
@@ -47,6 +51,7 @@ export class CellRendererDialog implements ICellRendererAngularComp {
 
 
   openDialog(): void {
+    this.drawerRef.close();
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
       minWidth: '300px',
       height: 'auto',
@@ -54,7 +59,8 @@ export class CellRendererDialog implements ICellRendererAngularComp {
     });
 
     dialogRef.closed.subscribe((result) => {
-      console.log('The dialog was closed');
+      this.drawerRef.open();
+
       if (result !== undefined) {
         console.log(result)
       }
@@ -111,18 +117,20 @@ export class DialogOverviewExampleDialog implements OnInit {
             xName: "Month",
             yKey: "year",
             yName: "Year",
-
+            
             colorKey: "quantity",
             colorName: "Quantity",
             colorRange: ["#43a2ca", "#a8ddb5", "#f0f9e8"],
             label: {
               enabled: true,
               formatter: function (params: { value: number; }) {
-                return parseFloat((params.value * 10).toFixed(2)).toString();
+                return parseFloat((params.value).toFixed(2)).toString();
               }
             },
+            strokeWidth: 1,
           },
         ],
+        
       };
     });
   }

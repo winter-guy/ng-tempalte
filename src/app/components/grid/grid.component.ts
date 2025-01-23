@@ -1,5 +1,5 @@
 import { CellRendererDialog } from './../expand-view/expand-view.component';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import {
   AllCommunityModule,
   CellSelectionOptions,
@@ -33,6 +33,12 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../../state/app.reducer';
 import { Observable } from 'rxjs';
 
+import { MatDrawer } from '@angular/material/sidenav';
+
+export interface ICrdType {
+  text: string; drawerRef: MatDrawer
+}
+
 ModuleRegistry.registerModules([
   AllCommunityModule,
   RowGroupingModule,
@@ -53,54 +59,60 @@ ModuleRegistry.registerModules([
   imports: [AgGridAngular],
   templateUrl: './grid.component.html'
 })
-export class GridComponent implements OnInit {
+export class GridComponent implements OnInit, OnChanges {
   readonly _ocd = inject(OilCompaniesDataService);
   readonly _store = inject(Store);
 
-    app$: Observable<AppState> = this._store.select('app');
+  app$: Observable<AppState> = this._store.select('app');
+  drawerRef = input<MatDrawer>();
 
   // Row Data: The data to be displayed.
   rowData!: OilDataRecord[];
 
   // Column Definitions: Defines the columns to be displayed.
-  colDefs: ColDef[] = [
-    {
-      field: "oil_companies_",
-      headerName: 'Oil Companies',
-      rowGroup: true,
-      hide: true,
-      cellRenderer: CellRendererDialog,
-      cellRendererParams: {
-        text: 'random text',
-      }
-    },
-    {
-      field: "_month_",
-      headerName: 'Month',
-      pivot: true
-    },
-    {
-      field: "year",
-      headerName: 'Year',
-      rowGroup: true,
-      hide: true,
-      pivot: true
-    },
-    {
-      field: "quantity_000_metric_tonnes_",
-      headerName: 'Quantity (Metric Tonnes)',
-      aggFunc: "sum",
-      cellRenderer: (params: ICellRendererParams) => {
-        params.value = params.value?.toFixed(2);
+  colDefs!: ColDef[]
 
-        if (params.value < 10000) {
-          return `<span class=" text-indigo-500">${params.value} </span>`;
+  ngOnChanges(changes: SimpleChanges): void {
+    this.colDefs = [
+      {
+        field: "oil_companies_",
+        headerName: 'Oil Companies',
+        rowGroup: true,
+        hide: true,
+        cellRenderer: CellRendererDialog,
+        cellRendererParams: {
+          text: 'random text',
+          drawerRef: this.drawerRef()
+        } as ICrdType
+      },
+      {
+        field: "_month_",
+        headerName: 'Month',
+        pivot: true
+      },
+      {
+        field: "year",
+        headerName: 'Year',
+        rowGroup: true,
+        hide: true,
+        pivot: true
+      },
+      {
+        field: "quantity_000_metric_tonnes_",
+        headerName: 'Quantity (Metric Tonnes)',
+        aggFunc: "sum",
+        cellRenderer: (params: ICellRendererParams) => {
+          params.value = params.value?.toFixed(2);
+  
+          if (params.value < 10000) {
+            return `<span class=" text-indigo-500">${params.value} </span>`;
+          }
+  
+          return params.value;
         }
-
-        return params.value;
       }
-    }
-  ];
+    ];
+  }
 
   public sideBar: SideBarDef | string | string[] | boolean | null = "columns";
   public pivotPanelShow: "always" | "onlyWhenPivoting" | "never" = "always";
