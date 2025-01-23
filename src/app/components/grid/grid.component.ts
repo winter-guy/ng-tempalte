@@ -29,6 +29,9 @@ import { AgGridAngular } from 'ag-grid-angular';
 
 import { OilCompaniesDataService } from '../../services/oil-companies-data.service';
 import { Match, OilDataRecord } from '../../types/records.type';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../state/app.reducer';
+import { Observable } from 'rxjs';
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -52,6 +55,9 @@ ModuleRegistry.registerModules([
 })
 export class GridComponent implements OnInit {
   readonly _ocd = inject(OilCompaniesDataService);
+  readonly _store = inject(Store);
+
+    app$: Observable<AppState> = this._store.select('app');
 
   // Row Data: The data to be displayed.
   rowData!: OilDataRecord[];
@@ -87,11 +93,11 @@ export class GridComponent implements OnInit {
       cellRenderer: (params: ICellRendererParams) => {
         params.value = params.value?.toFixed(2);
 
-        if(params.value < 10000) {
+        if (params.value < 10000) {
           return `<span class=" text-indigo-500">${params.value} </span>`;
         }
 
-       return params.value;
+        return params.value;
       }
     }
   ];
@@ -135,10 +141,8 @@ export class GridComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this._ocd._oil_records$.subscribe((_ords) => {
-
-      this.extractMatches(_ords);
-      this.rowData = [...new Set(_ords.map((x) => { return { ...x, quantity_000_metric_tonnes_: Number(x.quantity_000_metric_tonnes_), hasSelected: true } }))];
+    this.app$.subscribe((_ords) => {
+      this.rowData = [...new Set(_ords.items.map((x) => { return { ...x, quantity_000_metric_tonnes_: Number(x.quantity_000_metric_tonnes_), hasSelected: true } }))];
     })
   }
 

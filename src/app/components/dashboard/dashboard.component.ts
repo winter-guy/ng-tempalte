@@ -14,16 +14,18 @@ import { GridComponent } from "../grid/grid.component";
 import { MultiLineChartComponent } from "../chart/linechart.component";
 import { Store } from '@ngrx/store';
 import { loadItems } from '../../state/app.actions';
+import { Observable } from 'rxjs';
+import { AppState } from '../../state/app.reducer';
 
 @Component({
   selector: 'app-dashboard',
   imports: [
-    MatSidenavModule, 
-    MatButtonModule, 
-    SelectPreviewComponent, 
+    MatSidenavModule,
+    MatButtonModule,
+    SelectPreviewComponent,
     BadgePreviewComponent,
-    HlmButtonDirective, 
-    GridComponent, 
+    HlmButtonDirective,
+    GridComponent,
     MultiLineChartComponent
   ],
   providers: [OilCompaniesDataService],
@@ -48,53 +50,65 @@ export class DashboardComponent implements OnInit {
 
   _selectedCompanies: string[] = [];
   _oilDataRecords!: OilDataRecord[];
+  _series!: SeriesSet[];
+  _seried_data!: any;
 
-  readonly fb = inject(FormBuilder);
+  readonly _fb = inject(FormBuilder);
   readonly _oilData = inject(OilCompaniesDataService);
-  readonly store = inject(Store<{ items: OilDataRecord[] }>);
+  readonly _store = inject(Store<{ items: OilDataRecord[] }>);
+  readonly _cdr = inject(ChangeDetectorRef);
 
-  app$ = this.store.select('app');
+  app$: Observable<AppState> = this._store.select('app');
   filterOptionsFg!: FormGroup;
 
 
   ngOnInit(): void {
-    this._oilData.getRecords();
 
-    this._oilData._oil_records$.subscribe((res) => {
-      this._oilDataRecords = res;
+    /* RxJs way of doing things
+      this._oilData.getRecords();
 
-      if (res.length > 0)
-        this.oilCompanies = [...new Set(res.map((x) => x.oil_companies_))]?.map((searchStr) => {
-          return { value: searchStr, label: searchStr }
-        });
-    })
+      this._oilData._oil_records$.subscribe((res) => {
+        this._oilDataRecords = res;
+
+        if (res.length > 0)
+          this.oilCompanies = [...new Set(res.map((x) => x.oil_companies_))]?.map((searchStr) => {
+            return { value: searchStr, label: searchStr }
+          });
+      })
+    */
 
 
-    this.filterOptionsFg = this.fb.group({
+    /* ngrx way of doing things */
+    this._store.dispatch(loadItems());
+    
+    this.app$.subscribe((res) => {
+      this._oilDataRecords = res.items;
+      
+        if (res.items.length > 0)
+          this.oilCompanies = [...new Set(res.items.map((x) => x.oil_companies_))]?.map((searchStr) => {
+            return { value: searchStr, label: searchStr }
+          });
+    });
+
+    this.filterOptionsFg = this._fb.group({
       select: [],
     });
 
-
-    // ngrx
-    this.store.dispatch(loadItems());
-    this.app$.subscribe((x) => console.log('Items:', x.items));
   }
 
-  cdr = inject(ChangeDetectorRef);
-  _oilCompaniesWithData!: any
-  _series!: SeriesSet[];
-  _seried_data!: any;
+  
+  
 
   selectedCompanies(event: string[]) {
     this._selectedCompanies = event;
-    
+
     this._series = event?.map((x): SeriesSet => {
       return {
         type: "line",
         xKey: "time",
         yKey: x,
         yName: x,
-        interpolation: { type: "smooth"}
+        interpolation: { type: "smooth" }
       }
     });
 
@@ -108,22 +122,22 @@ export class DashboardComponent implements OnInit {
       const matchingRecords = odr.filter(
         (item) => item.time === time && selected?.includes(item.oil_companies_)
       );
-  
+
       return matchingRecords.reduce(
         (acc, item) => {
           acc[item.oil_companies_] = Number(item.quantity_000_metric_tonnes_);
           return acc;
         },
-        { time } as { time: number; [key: string]: number; }
+        { time } as { time: number;[key: string]: number; }
       );
     });
-  
+
     return transformedData;
   }
-  
+
 
   extractMatches(x: string[], data: OilDataRecord[]): Record<string, Match[]> {
-    const result: Record<string, Match[]> = {}; 
+    const result: Record<string, Match[]> = {};
 
     x?.forEach((searchStr) => {
       const matches = data

@@ -13,6 +13,9 @@ import { AgChartOptions } from "ag-charts-enterprise";
 import { Dialog, DIALOG_DATA, DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { OilCompaniesDataService } from '../../services/oil-companies-data.service';
 import { OilDataRecord } from '../../types/records.type';
+import { Observable } from 'rxjs';
+import { AppState } from '../../state/app.reducer';
+import { Store } from '@ngrx/store';
 
 export interface DialogData {
   name: string;
@@ -74,26 +77,29 @@ export class CellRendererDialog implements ICellRendererAngularComp {
   providers: [OilCompaniesDataService]
 })
 export class DialogOverviewExampleDialog implements OnInit {
-  readonly dialogRef = inject(DialogRef<DialogOverviewExampleDialog>);
-  readonly data = inject<DialogData>(DIALOG_DATA);
-  // readonly animal = model(this.data.prop);
+  readonly _dialogRef = inject(DialogRef<DialogOverviewExampleDialog>);
+  readonly _data = inject<DialogData>(DIALOG_DATA);
   readonly _oilData = inject(OilCompaniesDataService);
+  readonly _store = inject(Store);
+  // readonly animal = model(this.data.prop);
 
   public options!: AgChartOptions;
-  ngOnInit(): void {
-    this._oilData.getRecords();
 
-    this._oilData._oil_records$.subscribe((res) => {
+  app$: Observable<AppState> = this._store.select('app');
+
+
+  ngOnInit(): void {
+    this.app$.subscribe((res) => {
       this.options = {
-        data: res.filter((x) => (x.oil_companies_ == this.data.name)).map((x) => {
+        data: res.items.filter((x) => (x.oil_companies_ == this._data.name)).map((x) => {
           return {
             year: x.year,
             month: x._month_,
-            quantity: x.quantity_000_metric_tonnes_/10
+            quantity: x.quantity_000_metric_tonnes_ / 10
           }
         }),
         title: {
-          text: this.data.name,
+          text: this._data.name,
         },
         subtitle: {
           text: `(values are in metric tonnes * 10)`
@@ -105,12 +111,19 @@ export class DialogOverviewExampleDialog implements OnInit {
             xName: "Month",
             yKey: "year",
             yName: "Year",
+
             colorKey: "quantity",
             colorName: "Quantity",
             colorRange: ["#43a2ca", "#a8ddb5", "#f0f9e8"],
+            label: {
+              enabled: true,
+              formatter: function (params: { value: number; }) {
+                return parseFloat((params.value * 10).toFixed(2)).toString();
+              }
+            },
           },
         ],
       };
-    })
+    });
   }
 }
